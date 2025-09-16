@@ -2,17 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shipping Experts Chat</title>
-  <link rel="stylesheet" href="style.css">
+  <title>AI Chatbox</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #chat-container {
+      width: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .msg {
+      margin: 8px 0;
+    }
+    .user { text-align: right; color: #0066cc; }
+    .bot { text-align: left; color: #333; }
+    #input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+    }
+    #send {
+      border: none;
+      background: #0066cc;
+      color: white;
+      padding: 0 20px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div id="chatbox">
-    <div id="chat"></div>
-    <div id="inputBar">
-      <input id="userInput" type="text" placeholder="Type your message..." />
-      <button id="sendBtn">Send</button>
+  <div id="chat-container">
+    <div id="messages"></div>
+    <div id="input-area">
+      <input id="input" type="text" placeholder="Type here..." />
+      <button id="send">Send</button>
     </div>
   </div>
-  <script src="script.js"></script>
+
+  <script>
+    const input = document.getElementById("input");
+    const send = document.getElementById("send");
+    const messages = document.getElementById("messages");
+
+    function addMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = "msg " + sender;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, "user");
+      input.value = "";
+
+      try {
+        const res = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        addMessage(data.reply, "bot");
+      } catch (err) {
+        addMessage("Error: " + err.message, "bot");
+      }
+    }
+
+    send.addEventListener("click", sendMessage);
+    input.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
 </body>
 </html>
