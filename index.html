@@ -1,20 +1,18 @@
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const message = input.value;
-  input.value = "";
-
-  // Show user message
-  const chat = document.getElementById("chat");
-  chat.innerHTML += `<div class="user">You: ${message}</div>`;
-
-  // Call backend
-  const res = await fetch("/.netlify/functions/chat", {
-    method: "POST",
-    body: JSON.stringify({ message })
-  });
-
-  const data = await res.json();
-
-  // Show AI reply
-  chat.innerHTML += `<div class="bot">Bot: ${data.reply}</div>`;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shipping Experts Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="chatbox">
+    <div id="chat"></div>
+    <div id="inputBar">
+      <input id="userInput" type="text" placeholder="Type your message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
