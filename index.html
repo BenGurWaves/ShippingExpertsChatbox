@@ -1,0 +1,20 @@
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const message = input.value;
+  input.value = "";
+
+  // Show user message
+  const chat = document.getElementById("chat");
+  chat.innerHTML += `<div class="user">You: ${message}</div>`;
+
+  // Call backend
+  const res = await fetch("/.netlify/functions/chat", {
+    method: "POST",
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+
+  // Show AI reply
+  chat.innerHTML += `<div class="bot">Bot: ${data.reply}</div>`;
+}
